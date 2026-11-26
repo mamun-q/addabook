@@ -388,7 +388,7 @@ async function submitPost(groupId){
   const poll = opts.length >= 2 ? { options: opts } : null;
   const { error } = await sb.from('posts').insert({ user_id: me.id, body, image_url, feeling: $('#postFeeling').value.trim(), location: $('#postLoc').value.trim(), poll, group_id: groupId });
   if (error) { toast('পোস্ট হয়নি, আবার চেষ্টা করো'); return; }
-  sb.rpc('rpc_award', { p_reason: 'post' }).then(({ data }) => { if (typeof data === 'number') me.tokens = data; });
+  sb.rpc('rpc_award', { p_reason: 'post' }).then(({ data }) => { if (typeof data === 'number') { me.tokens = data; const b = document.getElementById('feedTokens'); if (b) b.textContent = '🪙 টোকেন: ' + bn(me.tokens); } });
   closeSheet(); toast('পোস্ট হয়েছে ✓ (+১৫ টোকেন)');
   if (groupId) renderGroupDetail(groupId); else if (curView === 'feed') renderFeed(); else if (curView === 'profile') renderProfile(me.id);
 }
@@ -404,7 +404,7 @@ async function renderFeed(tagFilter = null){
     <button class="composer" onclick="openComposer()">${avatar(me, 38, 15)}<span class="fake">মনে কী চলছে?</span><span style="color:var(--acc);display:flex">${I.img}</span></button>
     <div style="display:flex;gap:8px;padding:12px 12px 0">
       <button class="btn ghost sm" style="flex:1" onclick="go('groups')">👥 গ্রুপ</button>
-      <button class="btn ghost sm" style="flex:1" onclick="go('tokens')">🪙 টোকেন: ${bn(me.tokens)}</button>
+      <button class="btn ghost sm" style="flex:1" id="feedTokens" onclick="go('tokens')">🪙 টোকেন: ${bn(me.tokens)}</button>
       <button class="btn ghost sm" style="flex:1" onclick="go('dating')">💘 মনের মানুষ</button>
     </div>
     ${tagFilter ? `<div style="padding:12px 16px 0;font-size:14px">ট্যাগ: <b>#${esc(tagFilter)}</b> <a href="#" onclick="renderFeed();return false">✕ সব দেখো</a></div>` : ''}
