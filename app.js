@@ -96,7 +96,7 @@ function go(v, arg){
   window.scrollTo(0, 0);
   ({ feed: renderFeed, friends: renderFriends, trending: renderTrending, chat: renderChatList,
      profile: () => renderProfile(me.id), notifs: renderNotifs, search: renderSearch,
-     tokens: renderTokens, dating: renderDating, groups: renderGroups, saved: renderSaved }[v] || renderFeed)(arg);
+     tokens: renderTokens, dating: renderDating, groups: renderGroups, saved: renderSaved, settings: renderSettings }[v] || renderFeed)(arg);
 }
 
 /* ---------- AUTH ---------- */
@@ -404,7 +404,6 @@ async function renderFeed(tagFilter = null){
     <button class="composer" onclick="openComposer()">${avatar(me, 38, 15)}<span class="fake">মনে কী চলছে?</span><span style="color:var(--acc);display:flex">${I.img}</span></button>
     <div style="display:flex;gap:8px;padding:12px 12px 0">
       <button class="btn ghost sm" style="flex:1" onclick="go('groups')">👥 গ্রুপ</button>
-      <button class="btn ghost sm" style="flex:1" id="feedTokens" onclick="go('tokens')">🪙 টোকেন: ${bn(me.tokens)}</button>
       <button class="btn ghost sm" style="flex:1" onclick="go('dating')">💘 মনের মানুষ</button>
     </div>
     ${tagFilter ? `<div style="padding:12px 16px 0;font-size:14px">ট্যাগ: <b>#${esc(tagFilter)}</b> <a href="#" onclick="renderFeed();return false">✕ সব দেখো</a></div>` : ''}
@@ -555,16 +554,13 @@ async function renderProfile(uid){
       ${p.bio ? `<p style="font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.6">${esc(p.bio)}</p>` : ''}
       <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
       ${mine ? `<button class="btn" onclick="editProfile()">প্রোফাইল এডিট</button>
-        <button class="btn ghost" onclick="go('saved')">সেভ করা পোস্ট</button>
-        <button class="btn ghost" onclick="go('tokens')">🪙 ${bn(me.tokens)} টোকেন</button>
-        <button class="btn ghost" onclick="toggleTheme()">🌙 থিম</button>
-        <button class="btn ghost" onclick="doLogout()">লগ আউট</button>`
+        <button class="btn ghost" onclick="go('settings')">⚙️ সেটিংস</button>`
       : `${friendIds.has(uid) ? `<button class="btn ghost" onclick="unfriend('${uid}')">বন্ধু ✓</button>` : `<button class="btn" onclick="sendFriendReq('${uid}',this)">বন্ধু যোগ করো</button>`}
         <button class="btn ${followIds.has(uid) ? 'ghost' : ''}" onclick="toggleFollow('${uid}',this)">${followIds.has(uid) ? 'ফলো করছ ✓' : 'ফলো করো'}</button>
         <button class="btn" onclick="startChat('${uid}')">মেসেজ</button>
         <button class="btn ghost" onclick="giftTokens('${uid}')">🎁 উপহার (১০০)</button>`}
       </div></div>
-    <div class="stats"><div><b>${bn(postsRes.count || 0)}</b><small>পোস্ট</small></div><div><b>${bn(friendCount)}</b><small>বন্ধু</small></div><div><b>${bn((followersRes.data || []).length)}</b><small>ফলোয়ার</small></div><div><b>🪙 ${bn(p.tokens)}</b><small>টোকেন</small></div></div>
+    <div class="stats"><div><b>${bn(postsRes.count || 0)}</b><small>পোস্ট</small></div><div><b>${bn(friendCount)}</b><small>বন্ধু</small></div><div><b>${bn((followersRes.data || []).length)}</b><small>ফলোয়ার</small></div></div>
     <div class="seclabel">পোস্টসমূহ</div><div id="profPosts"><div class="empty">লোড হচ্ছে...</div></div></div>`;
   const posts = await fetchPosts({ authorId: uid });
   $('#profPosts').innerHTML = posts.length ? posts.map(postCard).join('') : '<div class="card empty">এখনো কোনো পোস্ট নেই</div>';
@@ -770,6 +766,23 @@ async function sendMsg(convId){
   if (error) { toast('মেসেজ যায়নি'); inp.value = body; return; }
   const { data: members } = await sb.from('conversation_members').select('user_id').eq('conversation_id', convId);
   (members || []).filter(m => m.user_id !== me.id).forEach(m => notify(m.user_id, 'message', null, convId));
+}
+
+/* ---------- SETTINGS ---------- */
+async function renderSettings(){
+  curView = 'settings'; renderShell();
+  const { data: fresh } = await sb.from('profiles').select('tokens').eq('id', me.id).single();
+  if (fresh) me.tokens = fresh.tokens;
+  view().innerHTML = `<div class="view">
+    <div style="padding:14px 16px 0;font-size:18px;font-weight:800">সেটিংস</div>
+    <div class="card" style="padding:6px 15px">
+      <button class="menu-item" onclick="editProfile()">✏️ প্রোফাইল এডিট</button>
+      <button class="menu-item" onclick="go('tokens')">🪙 টোকেন ওয়ালেট <span style="margin-left:auto;font-weight:800;color:var(--acc)">${bn(me.tokens)}</span></button>
+      <button class="menu-item" onclick="go('saved')">🔖 সেভ করা পোস্ট</button>
+      <button class="menu-item" onclick="toggleTheme();toast('থিম বদলানো হয়েছে')">🌙 ডার্ক / লাইট থিম</button>
+      <button class="menu-item" style="color:var(--danger)" onclick="doLogout()">🚪 লগ আউট</button>
+    </div>
+    <p style="text-align:center;color:var(--faint);font-size:11.5px;padding:16px 0 4px">আড্ডাBook · LIMON Labs</p></div>`;
 }
 
 /* ---------- TOKENS ---------- */
