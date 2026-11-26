@@ -707,10 +707,11 @@ async function findOrCreateDM(uid){
       if (conv && !conv.is_group) return conv.id;
     }
   }
-  const { data: conv, error } = await sb.from('conversations').insert({ is_group: false }).select().single();
+  const newId = crypto.randomUUID();
+  const { error } = await sb.from('conversations').insert({ id: newId, is_group: false });
   if (error) return null;
-  await sb.from('conversation_members').insert([{ conversation_id: conv.id, user_id: me.id }, { conversation_id: conv.id, user_id: uid }]);
-  return conv.id;
+  await sb.from('conversation_members').insert([{ conversation_id: newId, user_id: me.id }, { conversation_id: newId, user_id: uid }]);
+  return newId;
 }
 async function startChat(uid){
   const id = await findOrCreateDM(uid);
@@ -719,11 +720,12 @@ async function startChat(uid){
 async function openGroupChat(gid){
   const { data: existing } = await sb.from('conversations').select('id').eq('group_id', gid).maybeSingle();
   if (existing) { openChat(existing.id); return; }
-  const { data: conv, error } = await sb.from('conversations').insert({ is_group: true, group_id: gid }).select().single();
+  const newId = crypto.randomUUID();
+  const { error } = await sb.from('conversations').insert({ id: newId, is_group: true, group_id: gid });
   if (error) { toast('গ্রুপ চ্যাট খোলা যায়নি'); return; }
   const { data: members } = await sb.from('group_members').select('user_id').eq('group_id', gid);
-  await sb.from('conversation_members').insert((members || []).map(m => ({ conversation_id: conv.id, user_id: m.user_id })));
-  openChat(conv.id);
+  await sb.from('conversation_members').insert((members || []).map(m => ({ conversation_id: newId, user_id: m.user_id })));
+  openChat(newId);
 }
 async function openChat(convId){
   curView = 'chat'; activeChat = convId; renderShell();
