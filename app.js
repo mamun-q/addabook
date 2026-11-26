@@ -401,6 +401,10 @@ async function renderFeed(tagFilter = null){
       <button class="story" onclick="goProfile('${me.id}')"><span class="ring"><i>${me.avatar_url ? `<img src="${esc(me.avatar_url)}">` : esc(me.name[0] || 'অ')}</i></span>তুমি</button>
     </div>
     <button class="composer" onclick="openComposer()">${avatar(me, 38, 15)}<span class="fake">মনে কী চলছে?</span><span style="color:var(--acc);display:flex">${I.img}</span></button>
+    <div style="display:flex;gap:8px;padding:12px 12px 0">
+      <button class="btn ghost sm" style="flex:1" onclick="go('groups')">👥 গ্রুপ</button>
+      <button class="btn ghost sm" style="flex:1" onclick="go('dating')">💘 মনের মানুষ</button>
+    </div>
     ${tagFilter ? `<div style="padding:12px 16px 0;font-size:14px">ট্যাগ: <b>#${esc(tagFilter)}</b> <a href="#" onclick="renderFeed();return false">✕ সব দেখো</a></div>` : ''}
     <div id="feedList"><div class="empty">লোড হচ্ছে...</div></div></div>`;
   const friends = [...friendIds].slice(0, 12);
