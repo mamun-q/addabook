@@ -397,16 +397,16 @@ async function submitPost(groupId){
 async function renderFeed(tagFilter = null){
   curView = 'feed'; renderShell();
   view().innerHTML = `<div class="view">
-    <div class="stories">
+    <div class="stories" id="storiesRow">
       <button class="story" onclick="goProfile('${me.id}')"><span class="ring"><i>${me.avatar_url ? `<img src="${esc(me.avatar_url)}">` : esc(me.name[0] || 'অ')}</i></span>তুমি</button>
-      <span id="storyRow" style="display:contents"></span>
     </div>
     <button class="composer" onclick="openComposer()">${avatar(me, 38, 15)}<span class="fake">মনে কী চলছে?</span><span style="color:var(--acc);display:flex">${I.img}</span></button>
     ${tagFilter ? `<div style="padding:12px 16px 0;font-size:14px">ট্যাগ: <b>#${esc(tagFilter)}</b> <a href="#" onclick="renderFeed();return false">✕ সব দেখো</a></div>` : ''}
     <div id="feedList"><div class="empty">লোড হচ্ছে...</div></div></div>`;
   const friends = [...friendIds].slice(0, 12);
   await cacheProfiles(friends);
-  $('#storyRow').innerHTML = friends.map(id => { const p = prof(id); return `<button class="story" onclick="goProfile('${id}')"><span class="ring"><i>${p.avatar_url ? `<img src="${esc(p.avatar_url)}">` : esc(p.name[0] || '?')}</i></span>${esc(p.name.split(' ')[0])}</button>`; }).join('');
+  const srow = $('#storiesRow');
+  if (srow) srow.insertAdjacentHTML('beforeend', friends.map(id => { const p = prof(id); return `<button class="story" onclick="goProfile('${id}')"><span class="ring"><i>${p.avatar_url ? `<img src="${esc(p.avatar_url)}">` : esc(p.name[0] || '?')}</i></span>${esc(p.name.split(' ')[0])}</button>`; }).join(''));
   let posts = await fetchPosts(tagFilter ? { tag: tagFilter } : {});
   posts.sort((a, b) => feedScore(b) - feedScore(a));
   $('#feedList').innerHTML = posts.length ? posts.map(postCard).join('') : `<div class="card empty">এখনো কোনো পোস্ট নেই।<br>প্রথম পোস্টটা তুমিই করো — পাবে ১৫ টোকেন!</div>`;

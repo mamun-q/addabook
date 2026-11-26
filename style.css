@@ -63,7 +63,7 @@ html.dark .seg{background:#1B2740}
 .stories{display:flex;gap:13px;padding:12px 16px 13px;background:var(--card);border-bottom:1px solid var(--line2);overflow-x:auto;scrollbar-width:none}
 .stories::-webkit-scrollbar{display:none}
 .story{width:60px;text-align:center;font-size:11px;color:var(--mut);flex:none;background:none;border:none}
-.story .ring{width:57px;height:57px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,#4F46E5,#9333EA,#EC4899);margin:0 auto 5px}
+.story .ring{display:block;width:57px;height:57px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,#4F46E5,#9333EA,#EC4899);margin:0 auto 5px;flex:none}
 .story .ring i{display:flex;width:100%;height:100%;border-radius:50%;background:var(--card);border:2px solid var(--card);align-items:center;justify-content:center;font-style:normal;font-weight:700;color:var(--acc);font-size:16px;overflow:hidden}
 .story .ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--card)}
 .composer{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 10px 9px 9px;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow);margin:12px 12px 0;width:calc(100% - 24px);text-align:left}
