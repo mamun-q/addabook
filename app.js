@@ -402,10 +402,6 @@ async function renderFeed(tagFilter = null){
       <span id="storyRow" style="display:contents"></span>
     </div>
     <button class="composer" onclick="openComposer()">${avatar(me, 38, 15)}<span class="fake">মনে কী চলছে?</span><span style="color:var(--acc);display:flex">${I.img}</span></button>
-    <div style="display:flex;gap:8px;padding:12px 12px 0">
-      <button class="btn ghost sm" style="flex:1" onclick="go('groups')">👥 গ্রুপ</button>
-      <button class="btn ghost sm" style="flex:1" onclick="go('dating')">💘 মনের মানুষ</button>
-    </div>
     ${tagFilter ? `<div style="padding:12px 16px 0;font-size:14px">ট্যাগ: <b>#${esc(tagFilter)}</b> <a href="#" onclick="renderFeed();return false">✕ সব দেখো</a></div>` : ''}
     <div id="feedList"><div class="empty">লোড হচ্ছে...</div></div></div>`;
   const friends = [...friendIds].slice(0, 12);
@@ -777,6 +773,8 @@ async function renderSettings(){
     <div style="padding:14px 16px 0;font-size:18px;font-weight:800">সেটিংস</div>
     <div class="card" style="padding:6px 15px">
       <button class="menu-item" onclick="editProfile()">✏️ প্রোফাইল এডিট</button>
+      <button class="menu-item" onclick="go('groups')">👥 গ্রুপ</button>
+      <button class="menu-item" onclick="go('dating')">💘 মনের মানুষ</button>
       <button class="menu-item" onclick="go('tokens')">🪙 টোকেন ওয়ালেট <span style="margin-left:auto;font-weight:800;color:var(--acc)">${bn(me.tokens)}</span></button>
       <button class="menu-item" onclick="go('saved')">🔖 সেভ করা পোস্ট</button>
       <button class="menu-item" onclick="toggleTheme();toast('থিম বদলানো হয়েছে')">🌙 ডার্ক / লাইট থিম</button>
